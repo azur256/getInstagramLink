@@ -1,0 +1,54 @@
+<<Instagramの写真からBlogエントリを作る>>
+Instagramの情報を自動的にBloggerに送り込むには
+Instagramの情報をRSSで取得してRSSを解析して
+コンテンツを作るという流れにする。
+
+*** RSSフィードの取得
+Instagramの情報をRSSとして取得するには、
+http://instagram.heroku.com/users/azur256の
+RSSフィード(http://instagram.heroku.com/users/119509.atom)を
+うまく使えばいいかも。
+RSS.stagram は 60件取得できるらしいので、こっちに変えてみる。
+http://rss.stagram.tk/feed.php?id=119509&username=azur256&rss
+
+RSSはXML::Feedで簡単に取得できた。
+
+***日付関連の処理
+Feedの情報を解析して、実行した前の週の写真を一覧でPOSTする。
+前の週ということで、日曜日に前の週の日曜日までから土曜日までの
+フィードを取得することにする。
+Time::Pieceで%Uを使うと日曜日が週始まりの週番号が取れる。
+年末年始で日曜日が中途半端な状況になると53週と0週ができる
+(こういう時は12月の最終週が53週、1月の最初の週が0週となる)
+ので、０週は53週に寄せることにする
+
+pubDateの変換が色々うまくいかなかったのだが、XML::FeedのissuedはDateTime
+を返却するので、下記の調査は無駄に…でも、まぁいいかな。
+RSSのpubDate形式の変換がうまくいかない理由は以下にあった。
+http://d.hatena.ne.jp/syohex/20091105/1257435289
+http://d.hatena.ne.jp/syohex/20091104/1257347542
+
+日本語環境なのでLocaleが変に影響するらしい。
+LANG=ja_JP.UTF-8 を LANG=C にするとOKとのこと。
+また、Time::Piece->strptime() を実行すると判るらしい。
+確かにターミナルの環境変数を変更すれば動作する。
+これをShellの中でやっても良いのだが、スマートではないので
+Perlの中でやれるようにしたい。
+Perlは当然ながら初期化時にLocaleを読んでしまうのでコード中から
+LANG環境変数を変更しても反映されない。このあたりのことが
+http://perl-users.jp/articles/advent-calendar/2011/hacker/6
+に書いてある。
+
+ちなみに Time::Piece は デフォルトの localtime なども置き換えて
+しまうので、use 宣言では関数を読み込まないように
+use Time::Piece ();
+と宣言して完全修飾名で利用する。DateTimeよりも軽量で高速らしい。
+
+RSSフィードの最新確認はid属性でできるように見える
+がこれも結局使わないことに。
+
+***ToDo
+何週前からどのくらい戻るのかを引数指定できるようにする。
+タイトルや件数の文字列を入れる
+ファイルに出力する
+アプリの名前をタイトルから引き抜いてアプリのリンクをつける
