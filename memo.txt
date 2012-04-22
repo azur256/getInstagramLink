@@ -52,3 +52,14 @@ RSSフィードの最新確認はid属性でできるように見える
 タイトルや件数の文字列を入れる
 ファイルに出力する
 アプリの名前をタイトルから引き抜いてアプリのリンクをつける
+Instagram APIを使うように変更するか？
+Instagram API
+  http://watcher.moe-nifty.com/memo/2011/02/instagram-api.html
+  http://instagram.com/developer/
+  http://www.mrlittlebig.com/blog/040/
+  
+  http://instagr.am/developer でAPIを申請
+  Client ID: 783732f53e8f4cbba694e16e016b7f0b
+  Client Secret: 84a71ed25fab405788fae8efe5e4333b
+
+
